@@ -1,0 +1,138 @@
+const express = require('express');
+const cors = require('cors');
+const app = express();
+const mysql = require('mysql');
+app.use(cors());
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// สร้างการเชื่อมต่อ MySQL
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'nt_database'
+});
+
+// เชื่อมต่อกับฐานข้อมูล
+connection.connect((err) => {
+  if (err) {
+    console.error('Error connecting to database:', err);
+    return;
+  }
+  console.log('Connected to MySQL database!');
+});
+
+// GET - ดึงข้อมูลตัวแทนทั้งหมด
+app.get('/api/agents', (req, res) => {
+  const query = 'SELECT * FROM agents';
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching agents:', err);
+      res.status(500).json({ error: 'Error fetching data' });
+      return;
+    }
+    res.json(results);
+  });
+});
+
+// POST - เพิ่มข้อมูลตัวแทนใหม่
+app.post('/api/agents', (req, res) => {
+  const {
+    agent_code,
+    ca_number,
+    contract_number,
+    registered_name,
+    application_type,
+    manager_name,
+    mobile_phone,
+    email,
+    service_center,
+    agent_type,
+    id_number,
+    contract_start,
+    notes
+  } = req.body;
+
+  const query = `
+    INSERT INTO agents (
+      agent_code, ca_number, contract_number, registered_name,
+      application_type, manager_name, mobile_phone, email,
+      service_center, agent_type, id_number, contract_start, notes
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  const values = [
+    agent_code, ca_number, contract_number, registered_name,
+    application_type, manager_name, mobile_phone, email,
+    service_center, agent_type, id_number, contract_start, notes
+  ];
+
+  connection.query(query, values, (err, result) => {
+    if (err) {
+      console.error('Error adding agent:', err);
+      res.status(500).json({ error: 'Error adding data' });
+      return;
+    }
+    res.status(201).json({ message: 'Agent added successfully', id: result.insertId });
+  });
+});
+
+// PUT - อัพเดตข้อมูลตัวแทน
+app.put('/api/agents/:id', (req, res) => {
+  const id = req.params.id;
+  const updateData = req.body;
+  
+  const query = 'UPDATE agents SET ? WHERE id = ?';
+  connection.query(query, [updateData, id], (err, result) => {
+    if (err) {
+      console.error('Error updating agent:', err);
+      res.status(500).json({ error: 'Error updating data' });
+      return;
+    }
+    res.json({ message: 'Agent updated successfully' });
+  });
+});
+
+// DELETE - ลบข้อมูลตัวแทน
+app.delete('/api/agents/:id', (req, res) => {
+  const id = req.params.id;
+  
+  const query = 'DELETE FROM agents WHERE id = ?';
+  connection.query(query, [id], (err, result) => {
+    if (err) {
+      console.error('Error deleting agent:', err);
+      res.status(500).json({ error: 'Error deleting data' });
+      return;
+    }
+    res.json({ message: 'Agent deleted successfully' });
+  });
+});
+
+// ค้นหาตัวแทน
+app.get('/api/agents/search', (req, res) => {
+  const searchTerm = req.query.term;
+  const query = `
+    SELECT * FROM agents 
+    WHERE manager_name LIKE ? 
+    OR agent_code LIKE ? 
+    OR ca_number LIKE ?
+  `;
+  const searchValue = `%${searchTerm}%`;
+  
+  connection.query(query, [searchValue, searchValue, searchValue], (err, results) => {
+    if (err) {
+      console.error('Error searching agents:', err);
+      res.status(500).json({ error: 'Error searching data' });
+      return;
+    }
+    res.json(results);
+  });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
