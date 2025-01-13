@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Table with Search and Add</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles_3.css">
+</head>
+<body class="bg-light">
+
+    <!-- Header -->
+    <div class="container-1">
+        <h5>ระบบข้อมูลตาราง</h5>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="container my-3">
+        <div class="card-shadow-sm">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div class="search-box">
+                    <label for="searchInput"> ค้นหา: </label>
+                    <input type="text" id="searchInput" placeholder="พิมพ์ชื่อ..." style="width: 250px;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="container">
+        <div class="table-responsive">
+            <table id="dataTable" class="table table-bordered table-hover">
+                <thead class="table-warning">
+                    <tr>
+                        <th>ลำดับที่</th>
+                        <th>เลขรหัสตัวแทนขาย</th>
+                        <th>หมายเลข CA</th>
+                        <th>เลขรหัสเลขที่สัญญา</th>
+                        <th>จดทะเบียนในนาม</th>
+                        <th>ใบสมัคร</th>
+                        <th>ชื่อผู้ดูแล (ชื่อในระบบ)</th>
+                        <th>โทรศัพท์ Mobile</th>
+                        <th>Email</th>
+                        <th>ศูนย์บริการหลัก</th>
+                        <th>ประเภท</th>
+                        <th>เลขที่บัตร/ทะเบียนเลขที่</th>
+                        <th>เริ่มสัญญา</th>
+                        <th>หมายเหตุ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>1258</td>
+                        <td>7254892</td>
+                        <td>-</td>
+                        <td>สาขาโทรศัพท์บริการ</td>
+                        <td>
+                            <select>
+                                <option value="Mobile" selected>Mobile</option>
+                                <option value="BB">BB</option>
+                            </select>
+                        </td>
+                        <td>นาย อินามะ เชื้อจงดี</td>
+                        <td>081-234-5678</td>
+                        <td>inana@example.com</td>
+                        <td>ศูนย์ กทม</td>
+                        <td>
+                            <select>
+                                <option value="ร้านค้า" selected>ร้านค้า</option>
+                                <option value="นิติบุคคล">นิติบุคคล</option>
+                                <option value="บุคคลธรรมดา">บุคคลธรรมดา</option>
+                            </select>
+                        </td>
+                        <td>1234567890123</td>
+                        <td>01/01/2023</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>1258</td>
+                        <td>7254892</td>
+                        <td>-</td>
+                        <td>สาขาโทรศัพท์บริการ</td>
+                        <td>
+                            <select>
+                                <option value="Mobile" selected>Mobile</option>
+                                <option value="BB">BB</option>
+                            </select>
+                        </td>
+                        <td>นาย อับดุล เชื้อจงดี</td>
+                        <td>081-234-5678</td>
+                        <td>inana@example.com</td>
+                        <td>ศูนย์ กทม</td>
+                        <td>
+                            <select>
+                                <option value="ร้านค้า" selected>ร้านค้า</option>
+                                <option value="นิติบุคคล">นิติบุคคล</option>
+                                <option value="บุคคลธรรมดา">บุคคลธรรมดา</option>
+                            </select>
+                        </td>
+                        <td>1234567890123</td>
+                        <td>01/01/2023</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>1258</td>
+                        <td>7254892</td>
+                        <td>-</td>
+                        <td>สาขาโทรศัพท์บริการ</td>
+                        <td>
+                            <select>
+                                <option value="Mobile" selected>Mobile</option>
+                                <option value="BB">BB</option>
+                            </select>
+                        </td>
+                        <td>นาย สมชัย เชื้อจงดี</td>
+                        <td>081-234-5678</td>
+                        <td>inana@example.com</td>
+                        <td>ศูนย์ กทม</td>
+                        <td>
+                            <select>
+                                <option value="ร้านค้า" selected>ร้านค้า</option>
+                                <option value="นิติบุคคล">นิติบุคคล</option>
+                                <option value="บุคคลธรรมดา">บุคคลธรรมดา</option>
+                            </select>
+                        </td>
+                        <td>1234567890123</td>
+                        <td>01/01/2023</td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Add Button -->
+        <button id="addRowBtn" class="add-button">+</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+    <script src="search.js"></script>
+</body>
+</html>
