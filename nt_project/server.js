@@ -2,9 +2,14 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const mysql = require('mysql');
-app.use(cors());
+const path = require('path'); // เพิ่มบรรทัดนี้
+
+// เพิ่มการตั้งค่า static files ให้ถูกต้อง
+app.use(express.static(path.join(__dirname)));
+app.use('/pages', express.static(path.join(__dirname, 'NT_1'))); // ชี้ไปที่โฟลเดอร์ NT_1
 
 // Middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -19,10 +24,64 @@ const connection = mysql.createConnection({
 // เชื่อมต่อกับฐานข้อมูล
 connection.connect((err) => {
   if (err) {
-    console.error('Error connecting to database:', err);
-    return;
+      console.error('Error connecting to database:', err);
+      return;
   }
   console.log('Connected to MySQL database!');
+});
+
+// เพิ่ม endpoints สำหรับ dashboard cards
+app.get('/api/dashboard/cards', (req, res) => {
+  const query = 'SELECT * FROM dashboard_cards';
+  connection.query(query, (err, results) => {
+      if (err) {
+          res.status(500).json({ error: 'Error fetching cards' });
+          return;
+      }
+      res.json(results);
+  });
+});
+
+// เพิ่ม route สำหรับจัดการหน้า HTML
+app.get('/NT_1/*', (req, res) => {
+  // ดึงชื่อไฟล์จาก URL
+  const fileName = req.params[0];
+  // สร้างเส้นทางเต็มไปยังไฟล์
+  const filePath = path.join(__dirname, 'NT_1', fileName);
+  
+  // ส่งไฟล์กลับไป
+  res.sendFile(filePath, (err) => {
+      if (err) {
+          console.error('Error sending file:', err);
+          res.status(404).send('File not found');
+      }
+  });
+});
+
+app.post('/api/dashboard/cards', (req, res) => {
+  console.log('Data received:', req.body);
+
+  const { title, description, link, icon_path } = req.body;
+
+  // ตรวจสอบว่าข้อมูลครบถ้วน
+  if (!title || !description || !link) {
+      res.status(400).json({ error: 'Missing required fields' });
+      return;
+  }
+
+  const query = 'INSERT INTO dashboard_cards (title, description, link, icon_path) VALUES (?, ?, ?, ?)';
+  console.log('Executing query:', query);
+  console.log('With values:', [title, description, link, icon_path]);
+
+  connection.query(query, [title, description, link, icon_path], (err, result) => {
+      if (err) {
+          console.error('Error inserting data:', err);
+          res.status(500).json({ error: 'Error adding card' });
+          return;
+      }
+      console.log('Insert result:', result);
+      res.status(201).json({ message: 'Card added successfully', id: result.insertId });
+  });
 });
 
 // GET - ดึงข้อมูลตัวแทนทั้งหมด
