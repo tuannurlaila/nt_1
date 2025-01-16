@@ -1,0 +1,91 @@
+// dashboard.js
+document.addEventListener('DOMContentLoaded', function() {
+    // Event listener สำหรับ Modal Form
+    const addDataForm = document.getElementById('addDataForm');
+    if (addDataForm) {
+        addDataForm.addEventListener('submit', handleFormSubmit);
+    }
+
+    // โหลดข้อมูล cards
+    loadDashboardCards();
+});
+
+// ฟังก์ชันจัดการการ submit form
+async function handleFormSubmit(event) {
+    event.preventDefault();
+    
+    const formData = {
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        link: generateLink(document.getElementById('title').value),
+        icon_path: 'default_icon_path.png' // สามารถเพิ่มฟิลด์สำหรับอัพโหลดไอคอนได้
+    };
+
+    try {
+        const response = await fetch('http://localhost:3000/api/dashboard/cards', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+            alert('เพิ่มข้อมูลสำเร็จ');
+            // ปิด Modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addDataModal'));
+            modal.hide();
+            // โหลดข้อมูลใหม่
+            loadDashboardCards();
+        } else {
+            throw new Error('ไม่สามารถเพิ่มข้อมูลได้');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('เกิดข้อผิดพลาด: ' + error.message);
+    }
+}
+
+// ฟังก์ชันโหลดข้อมูล cards
+async function loadDashboardCards() {
+    try {
+        const response = await fetch('http://localhost:3000/api/dashboard/cards');
+        const cards = await response.json();
+        updateDashboardUI(cards);
+    } catch (error) {
+        console.error('Error loading cards:', error);
+    }
+}
+
+// ฟังก์ชันอัพเดต UI
+function updateDashboardUI(cards) {
+    const container = document.querySelector('.button-container');
+    if (!container) return;
+
+    container.innerHTML = ''; // เคลียร์ข้อมูลเดิม
+
+    cards.forEach(card => {
+        const cardHTML = `
+            <div class="card shadow-sm">
+                <button class="card-btn" onclick="window.location.href='${card.link}'">
+                    <div class="card-body d-flex align-items-center">
+                        <img src="${card.icon_path}" alt="Icon" class="me-3">
+                        <div>
+                            <h5 class="card-title">${card.title}</h5>
+                            <p class="card-text text-muted">${card.description}</p>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', cardHTML);
+    });
+}
+
+// ฟังก์ชันสร้าง link จากชื่อ
+function generateLink(title) {
+    // สร้าง link จากชื่อ (อาจต้องปรับแต่งตามความเหมาะสม)
+    return title.toLowerCase()
+               .replace(/\s+/g, '-')
+               .replace(/[^\u0E00-\u0E7F\w\-]/g, '') + '.html';
+}
